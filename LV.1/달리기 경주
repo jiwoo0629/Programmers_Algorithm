@@ -1,0 +1,27 @@
+#include <string>
+#include <vector>
+#include <map>
+#include <algorithm>
+
+using namespace std;
+
+vector<string> solution(vector<string> players, vector<string> callings) {
+    vector<string> answer;
+    map<string, int> call; //호출 이름, 순위
+    map<int, string> rank; 
+    for(int i=0; i<players.size(); i++) {
+        rank[i] = players[i];
+        call[players[i]] = i;
+    }
+    for(int i=0; i<callings.size(); i++) {
+        int cur = call[callings[i]];
+        string front = rank[cur-1];
+        rank[cur-1] = callings[i];
+        rank[cur] = front;
+        call[callings[i]] = cur-1;
+        call[front] = cur;
+    }
+    for(auto iter = rank.begin(); iter != rank.end(); iter++) 
+        answer.push_back(iter->second);
+    return answer;
+}
