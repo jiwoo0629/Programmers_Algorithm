@@ -1,0 +1,35 @@
+#include <string>
+#include <vector>
+
+using namespace std;
+
+vector<int> solution(vector<string> park, vector<string> routes) {
+    vector<int> answer;
+    pair<int, int> cur;
+    for(int i=0; i<park.size(); i++) {
+        for(int j=0; j<park[i].size(); j++) {
+            if(park[i][j] == 'S') cur = {i, j};
+        }
+    }
+    for(int i=0; i<routes.size(); i++) {
+        int pos = routes[i].find(' ');
+        string dir = routes[i].substr(0, pos);
+        int cnt = stoi(routes[i].substr(pos+1));
+        bool canmove = true;
+        pair<int, int> prev = cur;
+        for(int k=0; k<cnt; k++) {
+            if(dir == "E") cur.second++; //동
+            else if(dir == "W") cur.second--; //서
+            else if(dir == "S") cur.first++; //남
+            else if(dir == "N") cur.first--; //북
+            if(cur.first < 0 || cur.first >= park.size() || cur.second < 0 || cur.second >= park[0].size() || park[cur.first][cur.second] == 'X') { //범위를 벗어나거나 장애물을 만난 경우
+                canmove = false;
+                break;
+            }
+        }
+        if(!canmove) cur = prev;
+    }
+    answer.push_back(cur.first);
+    answer.push_back(cur.second);
+    return answer;
+}
