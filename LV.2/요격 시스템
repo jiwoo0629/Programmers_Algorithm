@@ -1,0 +1,25 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+bool cmp (vector<int>& v1, vector<int>& v2) {
+    return v1[1] < v2[1];
+}
+
+int solution(vector<vector<int>> targets) {
+    int answer = 0;
+    int last = -1;
+    sort(targets.begin(), targets.end(), cmp);
+    for(auto t : targets) {
+        if(t[0] < last && t[1] >= last) continue;
+        else {
+            last = t[1];
+            answer++;
+        }
+    }
+    
+    return answer;
+}
