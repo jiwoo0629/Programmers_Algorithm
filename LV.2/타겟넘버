@@ -1,0 +1,32 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+
+/*
+numbers: [1, 1, 1, 1, 1]
+target: 3
+n개 중에 k개를 골라 그 위치는 -1을 곱해서 더하도록
+*/
+using namespace std;
+
+int solution(vector<int> numbers, int target) {
+    int answer = 0;
+    
+    for(int i=1; i<=numbers.size(); i++) {
+        vector<int> v;
+        for(int l=0; l<i; l++) v.push_back(1);
+        for(int l=i; l<numbers.size(); l++) v.push_back(0);
+        sort(v.begin(), v.end());
+        do {
+            int sum = 0;
+            for(int k=0; k<v.size(); k++) {
+                if(v[k] == 1) sum += (numbers[k] * (-1));
+                else sum += numbers[k];
+            }
+            if(sum == target) answer++;
+        } while(next_permutation(v.begin(), v.end()));   
+    }
+    
+    
+    return answer;
+}
