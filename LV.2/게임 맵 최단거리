@@ -1,0 +1,37 @@
+#include<vector>
+#include<queue>
+using namespace std;
+
+int step[101][101];
+bool vis[101][101];
+int dx[4] = {-1, 0, 1, 0};
+int dy[4] = {0, -1, 0, 1};
+
+int solution(vector<vector<int> > maps)
+{
+    int answer = 0;
+    int n = maps.size();
+    int m = maps[0].size();
+    queue<pair<int, int>> q;
+    q.push({0, 0});
+    vis[0][0] = true;
+    step[0][0] = 1;
+    while(!q.empty()) {
+        pair<int, int> cur = q.front();
+        q.pop();
+        for(int k=0; k<4; k++) {
+            int nx = cur.first + dx[k];
+            int ny = cur.second + dy[k];
+            if(nx < 0 || nx >= n || ny < 0 || ny >= m) continue;
+            if(vis[nx][ny] || maps[nx][ny] == 0) continue;
+            q.push({nx, ny});
+            vis[nx][ny] = true;
+            if(step[nx][ny] == 0) step[nx][ny] = step[cur.first][cur.second] + 1;
+            else step[nx][ny] = min(step[nx][ny], step[cur.first][cur.second] + 1);
+        }
+    }
+    if(!vis[n-1][m-1]) answer = -1;
+    else answer = step[n-1][m-1];
+    
+    return answer;
+}
