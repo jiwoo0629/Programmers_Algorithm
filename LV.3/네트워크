@@ -1,0 +1,29 @@
+#include <string>
+#include <vector>
+#include <queue>
+using namespace std;
+
+bool vis[202];
+
+int solution(int n, vector<vector<int>> computers) {
+    int answer = 0;
+    
+    queue<int> q;
+    for(int i=0; i<n; i++) {
+        if(vis[i]) continue;
+        answer++;
+        vis[i] = true;
+        q.push(i);
+        while(!q.empty()) {
+            int cur = q.front();
+            q.pop();
+            for(int k=0; k<n; k++) {
+                if(vis[k] || computers[cur][k] == 0) continue;
+                vis[k] = true;
+                q.push(k);
+            }
+        }
+    }
+    
+    return answer;
+}
