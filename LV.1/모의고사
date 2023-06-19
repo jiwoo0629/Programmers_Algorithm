@@ -1,0 +1,49 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+bool cmp(pair<int, int> a, pair<int, int> b) {
+    if(a.second == b.second) return a.first < b.first;
+    else return a.second > b.second;
+}
+
+vector<int> solution(vector<int> answers) {
+    vector<int> answer;
+    int n1=0, n2=0, n3=0;
+    for(int i=0; i<answers.size(); i++)  //n1 정답조건
+        if(answers[i] == (i % 5 + 1)) n1++;  
+    
+    for(int i=0; i<answers.size(); i++) { //n2 정답조건
+        if(i % 2 == 0) {
+            if(answers[i] == 2) n2++;
+        }
+        else {
+            if((i/2) % 4 == 0 && answers[i] == 1) n2++;
+            if((i/2) % 4 == 1 && answers[i] == 3) n2++;
+            if((i/2) % 4 == 2 && answers[i] == 4) n2++;
+            if((i/2) % 4 == 3 && answers[i] == 5) n2++;
+        }
+    }
+    
+    for(int i=0; i<answers.size(); i++) { //n3 정답조건
+        if((i % 10 == 0 || i % 10 == 1) && answers[i] == 3) n3++;
+        if((i % 10 == 2 || i % 10 == 3) && answers[i] == 1) n3++;
+        if((i % 10 == 4 || i % 10 == 5) && answers[i] == 2) n3++;
+        if((i % 10 == 6 || i % 10 == 7) && answers[i] == 4) n3++;
+        if((i % 10 == 8 || i % 10 == 9) && answers[i] == 5) n3++;
+    }
+    
+    vector<pair<int, int>> v;
+    v.push_back({1, n1});
+    v.push_back({2, n2});
+    v.push_back({3, n3});
+    sort(v.begin(), v.end(), cmp);
+    
+    int k = v[0].second;
+    for(int i=0; i<v.size(); i++) 
+        if(v[i].second == k) answer.push_back(v[i].first);
+    
+    return answer;
+}
