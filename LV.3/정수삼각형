@@ -1,0 +1,23 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+int sum[505][505];
+
+int solution(vector<vector<int>> triangle) {
+    int answer = 0;
+    int n = triangle.size();
+    sum[0][0] = triangle[0][0];
+    for(int i=1; i<n; i++) {
+        for(int j=0; j<=i; j++) {
+            if(j==0) sum[i][j] = sum[i-1][j] + triangle[i][j];
+            else if(j==i) sum[i][j] = sum[i-1][j-1] + triangle[i][j];
+            else sum[i][j] = max(sum[i-1][j-1], sum[i-1][j]) + triangle[i][j];
+        }
+    }
+    answer = *max_element(sum[n-1], sum[n-1] + n);
+    
+    return answer;
+}
