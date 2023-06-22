@@ -1,0 +1,21 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+int solution(vector<int> money) {
+    int answer = 0;
+    vector<int> v1, v2; //끝과 끝이 만나지 않게 하기 위해 2가지 경우로 나눠서 확인
+    v1.push_back(0);
+    v2.push_back(0);
+    for(int i=0; i<money.size()-1; i++) v1.push_back(money[i]);
+    for(int i=1; i<money.size(); i++) v2.push_back(money[i]);
+    for(int i=2; i<v1.size(); i++) {
+        v1[i] = max(v1[i-1], v1[i-2] + v1[i]);
+        v2[i] = max(v2[i-1], v2[i-2] + v2[i]);
+    }    
+    answer = max(v1[v1.size()-1], v2[v2.size()-1]);
+    
+    return answer;
+}
