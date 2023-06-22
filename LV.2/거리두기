@@ -1,0 +1,53 @@
+#include <string>
+#include <vector>
+#include <queue>
+#include <tuple>
+#include <algorithm>
+using namespace std;
+
+string room[5];
+bool vis[5][5];
+int dx[4] = {-1, 0, 1, 0};
+int dy[4] = {0, -1, 0, 1};
+
+vector<int> solution(vector<vector<string>> places) {
+    vector<int> answer;
+    for(int r=0; r<5; r++) {
+        vector<pair<int, int>> v;
+        for(int i=0; i<5; i++) room[i] = places[r][i]; //대기실 모습 복사
+        for(int i=0; i<5; i++) {
+            for(int j=0; j<5; j++) 
+                if(room[i][j] == 'P') v.push_back({i, j});
+        }
+        bool dist = true;
+        for(int a=0; a<v.size(); a++) {
+            for(int i=0; i<5; i++) fill(vis[i], vis[i]+5, false);
+            queue<tuple<int, int, int>> q; //x좌표, y좌표, 이동횟수
+            q.push({v[a].first, v[a].second, 0});
+            vis[v[a].first][v[a].second] = true;
+            while(!q.empty()) {
+                int x, y, cnt;
+                tie(x, y, cnt) = q.front();
+                q.pop();
+                for(int dir=0; dir<4; dir++) {
+                    int nx = x + dx[dir];
+                    int ny = y + dy[dir];
+                    if(nx < 0 || nx >= 5 || ny < 0 || ny >= 5) continue;
+                    if(vis[nx][ny] || room[nx][ny] == 'X') continue;
+                    if(room[nx][ny] == 'P') {
+                        dist = false;
+                        break;
+                    }
+                    if(cnt == 0) q.push({nx, ny, cnt+1});
+                    vis[nx][ny] = true;
+                }
+                if(!dist) break;
+            }
+            if(!dist) break;
+        }
+        if(!dist) answer.push_back(0);
+        else answer.push_back(1);
+    }
+    
+    return answer;
+}
