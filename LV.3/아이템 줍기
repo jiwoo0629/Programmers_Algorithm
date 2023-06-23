@@ -1,0 +1,66 @@
+#include <string>
+#include <vector>
+#include <queue>
+#include <algorithm>
+
+using namespace std;
+
+bool vis[102][102];
+int maps[102][102];
+int step[102][102];
+int dx[4] = {-1, 0, 1, 0};
+int dy[4] = {0, -1, 0, 1};
+
+int solution(vector<vector<int>> rectangle, int characterX, int characterY, int itemX, int itemY) {
+    int answer = 0;
+    for(int i=0; i<rectangle.size(); i++) {
+        int x1 = rectangle[i][0] * 2, y1 = rectangle[i][1] * 2;
+        int x2 = rectangle[i][2] * 2, y2 = rectangle[i][3] * 2;
+        //[[1,1,7,4],[3,2,5,5],[4,3,6,9],[2,6,8,8]]
+        for(int j=x1; j<=x2; j++) {
+            if(!vis[y1][j]) maps[y1][j] = 1;
+            if(!vis[y2][j]) maps[y2][j] = 1;
+        }
+        for(int j=y1+1; j<y2; j++) {
+            if(!vis[j][x1]) maps[j][x1] = 1;
+            if(!vis[j][x2]) maps[j][x2] = true;
+        }
+        for(int j = y1+1; j < y2; j++) { //도형이 겹치는구간 BFS의 접근할수없도록 좌표 0으로 변경
+            for(int k = x1+1; k < x2; k++) {
+                if(maps[j][k] == 1 && vis[j][k] == true)
+                    maps[j][k] = 0;
+                else
+                    vis[j][k] = true;
+            }
+        }
+        for(int j=y1; j<=y2; j++) { //다음 삽입 때 추가하지 않기 위해 vis에 true 처리
+            for(int k=x1; k<=x2; k++)
+                vis[j][k] = true;
+        }
+    }
+    for(int i=0; i<101; i++) {
+        fill(vis[i], vis[i]+102, false);
+        fill(step[i], step[i]+102, -1);
+    }
+    queue<pair<int, int>> q;
+    q.push({characterY*2, characterX*2});
+    step[characterY*2][characterX*2] = 0;
+    vis[characterY*2][characterX*2] = true;
+    while(!q.empty()) {
+        pair<int, int> cur = q.front();
+        q.pop();
+        for(int dir=0; dir<4; dir++) {
+            int nx = cur.first + dx[dir];
+            int ny = cur.second + dy[dir];
+            if(nx < 0 || ny < 0) continue;
+            if(vis[nx][ny] || maps[nx][ny] != 1) continue;
+            q.push({nx, ny});
+            if(step[nx][ny] == -1) step[nx][ny] = step[cur.first][cur.second] + 1;
+            else step[nx][ny] = min(step[nx][ny], step[cur.first][cur.second] + 1);
+            vis[nx][ny] = true;
+        }
+    }
+    answer = step[itemY*2][itemX*2] / 2;
+    
+    return answer;
+}
