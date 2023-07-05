@@ -1,0 +1,26 @@
+#include <string>
+#include <vector>
+
+using namespace std;
+
+vector<int> solution(vector<int> progresses, vector<int> speeds) {
+    vector<int> answer;
+    vector<pair<int, int>> time; //걸리는 날, 개수
+    for(int i=0; i<progresses.size(); i++) {
+        int n = progresses[i];
+        int day = 0;
+        while(n < 100) {
+            n += speeds[i];
+            day++;
+        }
+        if(i == 0) time.push_back({day , 1});
+        else {
+            if(day <= time.back().first) time.back().second++;
+            else time.push_back({day, 1});
+        }
+    }
+    for(int i=0; i<time.size(); i++) 
+        answer.push_back(time[i].second);
+    
+    return answer;
+}
