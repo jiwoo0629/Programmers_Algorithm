@@ -1,0 +1,39 @@
+#include <string>
+#include <vector>
+#include <queue>
+#include <map>
+#include <algorithm>
+
+using namespace std;
+
+int dist[20005];
+bool vis[20005];
+
+int solution(int n, vector<vector<int>> edge) {
+    int answer = 0;
+    vector<vector<int>> v(n+1);
+    for(int i=0; i<edge.size(); i++) {
+        v[edge[i][0]].push_back(edge[i][1]);
+        v[edge[i][1]].push_back(edge[i][0]);
+    }
+    queue<int> q;
+    q.push(1);
+    dist[1] = 0;
+    vis[1] = true;
+    while(!q.empty()) {
+        int cur = q.front();
+        q.pop();
+        for(int i=0; i<v[cur].size(); i++) {
+            if(vis[v[cur][i]]) continue;
+            dist[v[cur][i]] = dist[cur] + 1;
+            q.push(v[cur][i]); 
+            vis[v[cur][i]] = true;
+        }
+    }
+    map<int, int> m;
+    for(int i=1; i<=n; i++)
+        m[dist[i]]++;
+    answer = m[*max_element(dist+1, dist+n+1)];
+    
+    return answer;
+}
