@@ -1,0 +1,53 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+//다이아 곡괭이 => 다이아 : 1, 철 : 1, 돌 : 1
+//철 곡괭이 => 다이아 : 5, 철 : 1, 돌 : 1
+//돌 곡괭이 => 다이아 : 25, 철 : 5,  돌 : 1
+//곡괭이 하나로 광물 5개 연속,, 그러면 최대 10회 실행 기준,, 백트래킹
+
+int answer = 25 * 50; //최소 피로도 
+int pickCount = 0; //채굴을 수행할 횟수
+int tired[10]; //피로도 배열
+
+void func(int k, vector<int> v, vector<string> vs) {
+    if(k == pickCount) {
+        answer = min(answer, tired[k-1]);
+        return;
+    }
+    for(int i=0; i<v.size(); i++) {
+        int cnt = 0, vsSize = vs.size();
+        if(v[i] > 0) {
+            v[i]--;
+            for(int j=5*k; j<min(5*k+5, vsSize); j++) {
+                if(i == 0) cnt++;
+                else if(i == 1) {
+                    if(vs[j] == "diamond") cnt += 5;
+                    else cnt++;
+                }
+                else if(i == 2) {
+                    if(vs[j] == "diamond") cnt += 25;
+                    else if(vs[j] == "iron") cnt += 5;
+                    else cnt += 1;
+                }
+            }
+            if(k == 0) tired[k] = cnt;
+            else tired[k] = tired[k-1] + cnt;
+            func(k+1, v, vs);
+            tired[k] -= cnt;
+            v[i]++;
+        }
+    }
+}
+
+int solution(vector<int> picks, vector<string> minerals) {
+    for(int i=0; i<picks.size(); i++) pickCount += picks[i];
+    int num = minerals.size() / 5 + 1;
+    pickCount = min(pickCount, num); 
+    func(0, picks, minerals);
+    
+    return answer;
+}
