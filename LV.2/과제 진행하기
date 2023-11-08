@@ -1,0 +1,43 @@
+#include <string>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+/*
+[["korean", "11:40", "30"], ["english", "12:10", "20"], ["math", "12:30", "40"]]
+*/
+
+bool cmp (vector<string> a, vector<string> b) {
+    return a[1] < b[1];
+}
+
+vector<string> solution(vector<vector<string>> plans) {
+    vector<string> answer;
+    sort(plans.begin(), plans.end(), cmp);
+    vector<pair<string, int>> infoList;
+    
+    int time = 0;
+    for(int i=0; i<plans.size(); i++) {
+        string str = plans[i][1];
+        int newTime = (stoi(str.substr(0, 2)) * 60) + stoi(str.substr(3, 2));
+        while(time < newTime) {
+            if(infoList.size() > 0) {
+                infoList.back().second--;
+                if(infoList.back().second == 0) {
+                    answer.push_back(infoList.back().first);
+                    infoList.pop_back();
+                }
+            }
+            time++;
+        }
+        infoList.push_back({plans[i][0], stoi(plans[i][2])});
+    }
+    while(infoList.size() > 0) {
+        answer.push_back(infoList.back().first);
+        infoList.pop_back();
+    }
+    
+    return answer;
+}
