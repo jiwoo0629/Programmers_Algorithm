@@ -1,75 +1,45 @@
 #include <string>
 #include <vector>
-#include <queue>
 #include <algorithm>
 using namespace std;
 
-int step[102][102];
-bool vis[102][102];
-int dx[4] = {-1, 0, 1, 0};
-int dy[4] = {0, -1, 0, 1};
+bool cmp (vector<int> a, vector<int> b) {
+    if(a[0] == b[0]) return a[1] < b[1];
+    return a[0] < b[0];
+}
 
-int solution(vector<string> maps) {
+int solution(vector<vector<string>> book_time) {
     int answer = 0;
-    int stol = 0, ltoe = 0;
-    int n = maps.size(); //세로
-    int m = maps[0].size(); //가로
-    pair<int, int> leb, end;
-    queue<pair<int, int>> q;
-    for(int i=0; i<n; i++) {
-        fill(step[i], step[i]+m, -1);
-        for(int j=0; j<m; j++) {
-            if(maps[i][j] == 'S') {
-                q.push({i, j});
-                step[i][j] = 0;
-                vis[i][j] = true;
+    vector<vector<int>> book_time_int;
+    for(int i=0; i<book_time.size(); i++) {
+        vector<string> vs = book_time[i];
+        vector<int> v;
+        for(int j=0; j<vs.size(); j++) {
+            string str = vs[j];
+            int time = stoi(str.substr(0, 2)) * 60 + stoi(str.substr(3, 2));
+            v.push_back(time);
+        }
+        book_time_int.push_back(v);
+    }
+    sort(book_time_int.begin(), book_time_int.end(), cmp);
+    
+    vector<vector<int>> v_answer;
+    for(int i=0; i<book_time_int.size(); i++) {
+        if(i == 0) {
+            v_answer.push_back(book_time_int[i]);
+            continue;
+        }
+        bool canfill = false;
+        for(int j=0; j<v_answer.size(); j++) {
+            if(book_time_int[i][0] >= v_answer[j][1] + 10) {
+                v_answer[j] = book_time_int[i];
+                canfill = true;
+                break;
             }
-            else if(maps[i][j] == 'L') leb = {i, j};
-            else if(maps[i][j] == 'E') end = {i, j};
         }
+        if(!canfill) v_answer.push_back(book_time_int[i]);
     }
-    while(!q.empty()) {
-        pair<int, int> cur = q.front();
-        q.pop();
-        for(int dir=0; dir<4; dir++) {
-            int nx = cur.first + dx[dir];
-            int ny = cur.second + dy[dir];
-            if(nx < 0 || nx >= n || ny < 0 || ny >= m) continue;
-            if(vis[nx][ny] || maps[nx][ny] == 'X') continue;
-            q.push({nx, ny});
-            vis[nx][ny] = true;
-            if(step[nx][ny] == -1) step[nx][ny] = step[cur.first][cur.second] + 1;
-            else step[nx][ny] = max(step[nx][ny], step[cur.first][cur.second] + 1);
-        }
-    }
-    if(step[leb.first][leb.second] == -1) stol = -1;
-    else stol = step[leb.first][leb.second];
-    for(int i=0; i<n; i++) {
-        fill(vis[i], vis[i]+m, false);
-        fill(step[i], step[i]+m, -1);
-    }
-    step[leb.first][leb.second] = 0;
-    vis[leb.first][leb.second] = true;
-    q.push({leb.first, leb.second});
-    while(!q.empty()) {
-        pair<int, int> cur = q.front();
-        q.pop();
-        for(int dir=0; dir<4; dir++) {
-            int nx = cur.first + dx[dir];
-            int ny = cur.second + dy[dir];
-            if(nx < 0 || nx >= n || ny < 0 || ny >= m) continue;
-            if(vis[nx][ny] || maps[nx][ny] == 'X') continue;
-            q.push({nx, ny});
-            vis[nx][ny] = true;
-            if(step[nx][ny] == -1) step[nx][ny] = step[cur.first][cur.second] + 1;
-            else step[nx][ny] = max(step[nx][ny], step[cur.first][cur.second] + 1);
-        }
-    }
-    if(step[end.first][end.second] == -1) ltoe = -1;
-    else ltoe = step[end.first][end.second];
     
-    if(stol == -1 || ltoe == -1) answer = -1;
-    else answer = stol + ltoe;
-    
+    answer = v_answer.size();
     return answer;
 }
