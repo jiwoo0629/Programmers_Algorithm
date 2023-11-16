@@ -1,0 +1,50 @@
+#include <string>
+#include <vector>
+#include <queue>
+#include <algorithm>
+
+using namespace std;
+
+int step[101][101];
+bool vis[101][101];
+int dx[4] = {-1, 0, 1, 0};
+int dy[4] = {0, -1, 0, 1};
+pair<int, int> goal;
+
+int solution(vector<string> board) {
+    int answer = 0;
+    
+    int n = board.size(), m = board[0].size();
+    queue<pair<int, int>> q;
+    for(int i=0; i<n; i++) {
+        fill(step[i], step[i] + m, -1);
+        for(int j=0; j<m; j++) {
+            if(board[i][j] == 'R') { 
+                q.push({i, j});
+                step[i][j] = 0;
+                vis[i][j] = true;
+            }
+            if(board[i][j] == 'G') goal = {i, j};
+        }
+    }
+    while(!q.empty()) {
+        pair<int, int> cur = q.front();
+        q.pop();
+        for(int dir=0; dir<4; dir++) {
+            int nx = cur.first;
+            int ny = cur.second;
+            do {
+               nx += dx[dir]; ny += dy[dir];  
+            } while (nx >= 0 && nx < n && ny >= 0 && ny < m && board[nx][ny] != 'D');
+            nx -= dx[dir]; ny -= dy[dir];
+            if(vis[nx][ny]) continue;
+            q.push({nx, ny});
+            vis[nx][ny] = true;
+            if(step[nx][ny] == -1) step[nx][ny] = step[cur.first][cur.second] + 1;
+            else step[nx][ny] = min(step[nx][ny], step[cur.first][cur.second] + 1);
+        }
+    }
+    answer = step[goal.first][goal.second];
+    
+    return answer;
+}
