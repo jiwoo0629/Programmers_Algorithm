@@ -1,0 +1,28 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+//col번째 컬럼 기준 오름차순 정렬, 같을 경우 첫번째 컬럼 기준 내림차순 정렬
+//S_i : i번째 행의 튜플에 대해 각 컬럼 값을 i로 나눈 나머지의 합
+//row_begin <= S_i <= row_end를 추적해 bitwise XOR 한 결과 반환
+
+int cmp_col;
+bool cmp(vector<int> a, vector<int> b) {
+    if(a[cmp_col] == b[cmp_col]) return a[0] > b[0];
+    return a[cmp_col] < b[cmp_col];
+}
+int solution(vector<vector<int>> data, int col, int row_begin, int row_end) {
+    int answer = 0;
+    cmp_col = col-1;
+    sort(data.begin(), data.end(), cmp);
+    for(int i=row_begin; i<=row_end; i++) {
+        int S = 0;
+        vector<int> v = data[i-1];
+        for(int j=0; j<v.size(); j++) 
+            S += (v[j] % i);
+        if(i == row_begin) answer = S;
+        else answer = answer ^ S;
+    }
+    return answer;
+}
