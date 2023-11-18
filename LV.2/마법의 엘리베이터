@@ -1,0 +1,27 @@
+#include <string>
+#include <vector>
+using namespace std;
+
+int solution(int storey) {
+    int answer = 0;
+    while(storey != 0) {
+        int num = storey % 10; //계산할 수
+        if(num < 5) {
+            answer += num;
+            storey /= 10;
+        }
+        else if(num > 5) {
+            answer += (10 - num);
+            storey /= 10;
+            storey++;
+        }
+        else {
+            int tmp = (storey/10) % 10;       
+            storey /= 10;
+            if(tmp >= 5) storey = storey + 1;
+            answer += 5;
+        }
+    }
+    
+    return answer;
+}
