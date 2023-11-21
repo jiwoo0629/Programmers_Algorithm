@@ -1,0 +1,60 @@
+#include <string>
+#include <vector>
+#include <stack>
+using namespace std;
+
+struct Node {
+    int num;
+    Node* prev;
+    Node* next;
+    Node(int num, Node* prev, Node* next) { this->num = num; this->prev = prev; this->next= next; }
+};
+
+string solution(int n, int k, vector<string> cmd) {
+    string answer = "";
+    for(int i=0; i<n; i++) answer += 'O';
+    
+    Node* o = new Node(0, NULL, NULL);
+    Node* cur = o;
+    for(int i=1; i<n; i++) {
+        Node* node = new Node(i, o, NULL);
+        o->next = node;
+        o = o->next;
+    }
+    
+    stack<Node*> s;
+    for(int i=0; i<k; i++) cur = cur->next;
+    for(int i=0; i<cmd.size(); i++) {
+        string command = cmd[i];
+        if(command[0] == 'U') {
+            int num = stoi(command.substr(2));
+            for(int j=0; j<num; j++) 
+                cur=cur->prev;
+        } 
+        else if(command[0] == 'D') {
+            int num = stoi(command.substr(2));
+            for(int j=0; j<num; j++)
+                cur = cur->next;
+        } 
+        else if(command[0] == 'C') {
+            s.push(cur);
+            if(cur->prev != NULL) cur->prev->next = cur->next;
+            if(cur->next != NULL) cur->next->prev = cur->prev;
+            if(cur->next != NULL) cur = cur->next;
+            else cur = cur->prev;
+        } 
+        else if(command[0] == 'Z') {
+            Node* node = s.top();
+            s.pop();
+            if(node->prev != NULL) node->prev->next = node;
+            if(node->next != NULL) node->next->prev = node;
+        }
+    }
+    while(!s.empty()) {
+        Node* node = s.top();
+        s.pop();
+        answer[node->num] = 'X';
+    }
+        
+    return answer;
+}
