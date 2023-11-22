@@ -1,0 +1,50 @@
+#include <string>
+#include <vector>
+#include <queue> //priority_queue
+#include <algorithm>
+using namespace std;
+
+/*
+출발지점 S에서 둘다 출발 (같이 출발할 수도 있고, 아예 따로 출발할 수도 있음)
+1. 처음부터 따로 가는 경우
+2. 처음엔 같이 가다가 어느지점부터 따로 가는 경우
+둘 비교해서 더 작은 값이 정답
+*/
+
+bool cmp (pair<int, int> a, pair<int, int> b) {
+    return a.second < b.second;
+}
+
+int solution(int n, int s, int a, int b, vector<vector<int>> fares) {
+    int answer = 0, MX = 20000000; //나올 수 있는 요금의 최댓값
+    vector<vector<pair<int, int>>> path(n+1); //경로 저장용 벡터
+    vector<vector<int>> cost(n+1, vector<int>(n+1,MX)); //플로이드-워셜 용 2차원 벡터
+    for(int i=1; i<=n; i++) cost[i][i] = 0;
+    for(int i=0; i<fares.size(); i++) {
+        vector<int> v = fares[i];
+        path[v[0]].push_back({v[1], v[2]}); //v[0]에서 v[1]까지 가는 거리 v[2]
+        path[v[1]].push_back({v[0], v[2]});
+        cost[v[0]][v[1]] = v[2];
+        cost[v[1]][v[0]] = v[2];
+    }
+    for(int i=0; i<path.size(); i++) //거리가 짧은 것부터 확인하도록 정렬
+        sort(path[i].begin(), path[i].end(), cmp); 
+    
+    //플로이드-워셜 알고리즘
+    for(int k=1; k<=n; k++) {
+        for(int i=1; i<=n; i++) {
+            for(int j=1; j<=n; j++) {
+                if(cost[i][j] > cost[i][k] + cost[k][j]) 
+                    cost[i][j] = cost[i][k] + cost[k][j];
+            }
+        }   
+    }
+    answer = cost[s][a] + cost[s][b]; //일단은, 각자 갔을 때의 최소거리를 answer로 지정
+    //i 지점까지 같이 가고 중간에 따로 가는 경우
+    for(int i=1; i<=n; i++) {
+        if(i == s) continue;
+        answer = min(answer, cost[s][i] + cost[i][a] + cost[i][b]);
+    }
+    
+    return answer;
+}
