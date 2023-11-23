@@ -1,0 +1,39 @@
+#include <string>
+#include <vector>
+#include <cmath>
+using namespace std;
+
+struct pos {
+    string str; int x; int y; int cnt;
+};
+
+int dx[4] = {1, 0, 0, -1}, dy[4] = {0, -1, 1, 0}; //down => left => right => up
+char dc[4] = {'d', 'l', 'r', 'u'};
+string ans = "z";
+
+//n*m 격자, (x,y)에서 출발, (r,c)에 도착, 딱 k번 움직인 순간에, 문자열이 사전 순으로 가장 빠른 경로
+
+void DFS(int n, int m, int x, int y, int r, int c, int k, int cnt, string str) {
+    if(cnt == k) {
+        if(x == r && y == c) {
+            if(ans > str) 
+                ans = str;
+        }
+        return;
+    }
+    for(int dir=0; dir<4; dir++) {
+        int nx = x + dx[dir], ny = y + dy[dir], ncnt = cnt + 1;
+        string nstr = str + dc[dir];
+        if(nx <= 0 || nx > n || ny <= 0 || ny > m || abs(r-nx) + abs(c-ny) > k-ncnt || nstr >= ans) continue;
+        DFS(n, m, nx, ny, r, c, k, ncnt, nstr);
+    }
+}
+
+string solution(int n, int m, int x, int y, int r, int c, int k) {
+    string answer = "";
+    if((abs(r-x) + abs(c-y) - k) % 2 != 0) return "impossible";
+    DFS(n, m, x, y, r, c, k, 0, answer);
+    if(ans == "z") return "impossible";
+    
+    return ans;
+}
