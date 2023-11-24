@@ -1,0 +1,44 @@
+#include <string>
+#include <vector>
+#include <queue>
+#include <algorithm>
+#include <iostream>
+using namespace std;
+
+struct boards {
+    int x; int y; int cost; int dir; //이동방향
+};
+int arr[4][26][26];
+int dx[4] = {-1, 0, 1, 0}, dy[4] = {0, -1, 0, 1}; //아래, 오, 위, 왼 
+
+int solution(vector<vector<int>> board) {
+    int n = board.size(), answer = 100000000;
+    for(int i=0; i<4; i++) {
+        for(int j=0; j<n; j++) {
+            for(int k=0; k<n; k++) 
+                arr[i][j][k] = 100000000;
+        }
+    }
+    arr[2][0][0] = 0; arr[3][0][0] = 0;
+    queue<boards> q;
+    q.push({0, 0, 0, 2}); q.push({0, 0, 0, 3});
+    
+    while(!q.empty()) {
+        int x = q.front().x, y = q.front().y, cost = q.front().cost, dir = q.front().dir;
+        q.pop();
+        if(x == n-1 && y == n-1) answer = min(answer, cost);
+        for(int k=0; k<4; k++) {
+            int nx = x + dx[k], ny = y + dy[k];
+            if(nx < 0 || nx >= n || ny < 0 || ny >= n || board[nx][ny] == 1) continue;
+            int ncost = cost;
+            if(dir == k) ncost += 100;
+            else ncost += 600;
+            if(arr[k][nx][ny] >= ncost) {
+                q.push({nx, ny, ncost, k});
+                arr[k][nx][ny] = ncost;
+            } 
+        }
+    }
+    
+    return answer;
+}
